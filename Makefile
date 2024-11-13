@@ -10,6 +10,10 @@ SRC		=		my_ls.c \
 				annexel.c \
 				flagl.c \
 				struct.c \
+				fonction_tri.c \
+				fonction_tri_t.c \
+				pre_ls.C \
+
 
 
 OBJ 	=		$(SRC:.c=.o)

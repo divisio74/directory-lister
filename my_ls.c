@@ -6,21 +6,16 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <pwd.h>
 #include <time.h>
 #include "my_ls.h"
-
-typedef struct {
-    int fl;
-    int fa;
-} Flags_d;
+#include "struct.h"
 
 
-void boucleflags(char **argv, Flags_d *flags, int i)
+void boucleflags(char **argv, flags_d_t *flags, int i)
 {
     int j = 0;
 
@@ -29,10 +24,12 @@ void boucleflags(char **argv, Flags_d *flags, int i)
             flags->fa = 1;
         if (argv[i][j] == 'l')
             flags->fl = 1;
+        if (argv[i][j] == 't')
+            flags->ft = 1;
     }
 }
 
-int boucle_argv(int argc, char **argv, Flags_d *flags)
+int boucle_argv(int argc, char **argv, flags_d_t *flags)
 {
     int path_index = 0;
 
@@ -46,28 +43,28 @@ int boucle_argv(int argc, char **argv, Flags_d *flags)
     return path_index;
 }
 
-int boucle_fl(struct dirent *directory_struct)
+int boucle_fl(char *name)
 {
     struct stat datafiles;
 
-    if (stat(directory_struct->d_name, &datafiles) == 0) {
-        print_l(directory_struct->d_name, &datafiles);
+    if (stat(name, &datafiles) == 0) {
+        print_l(name, &datafiles);
         return 0;
     } else {
         return 1;
     }
 }
 
-int structa(struct dirent *directory_struct, Flags_d flags, DIR *directory)
+int structa(char *namelist, flags_d_t flags)
 {
     struct stat datafiles;
-    int lend = my_strlen(directory_struct->d_name);
+    int lend = my_strlen(namelist);
 
-    if (flags.fa == 1 || directory_struct->d_name[0] != '.') {
+    if (flags.fa == 1 || namelist[0] != '.') {
         if (flags.fl == 1) {
-            boucle_fl(directory_struct);
+            boucle_fl(namelist);
         } else {
-            write(STDOUT_FILENO, directory_struct->d_name, lend);
+            write(STDOUT_FILENO, namelist, lend);
             write(STDOUT_FILENO, " ", 1);
         }
     }
@@ -75,26 +72,23 @@ int structa(struct dirent *directory_struct, Flags_d flags, DIR *directory)
 
 int my_ls(int argc, char *argv[])
 {
-    DIR *directory;
-    struct dirent *directory_struct;
-    Flags_d flags = {0, 0};
+    DIR *direc;
+    struct dirent *dir_str;
+    flags_d_t flags = {0, 0, 0, 0};
     int path_index;
+    char *namelist[100];
+    int n = 0;
 
     path_index = boucle_argv(argc, argv, &flags);
     if (path_index == 0) {
-        directory = opendir(".");
+        direc = opendir(".");
     } else {
-        directory = opendir(argv[path_index]);
+        direc = opendir(argv[path_index]);
     }
-    if (directory == NULL) {
+    if (direc == NULL) {
         perror("Pas de répertoire");
         return 1;
     }
-    directory_struct = readdir(directory);
-    while (directory_struct != NULL) {
-        structa(directory_struct, flags, directory);
-        directory_struct = readdir(directory);
-    }
-    closedir(directory);
+    pre_ls(dir_str, namelist, direc, flags);
     return 0;
 }
