@@ -12,6 +12,8 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include "struct.h"
+
 
 #ifndef MY_LS_H
     #define MY_LS_H
@@ -26,6 +28,16 @@ void print_t(long int taille);
 void print_hardlink_count(long int hardlinks);
 void print_perm(mode_t mode);
 void print_group(gid_t gid);
-int boucle_fl(struct dirent *directory_struct);
+int boucle_fl(char *name);
+int fonction_compare(const char *a, const char *b);
+void fonction_tri(char **arr, int n);
+void fonction_tri_t(char **arr, int n);
+int fonction_compare_t(const char *a, const char *b);
+time_t fonction_time(const char *filename);
+int pre_ls(struct dirent *dir_str, char **namelist,
+    DIR *direc, flags_d_t flags);
+int structa(char *namelist, flags_d_t flags);
+
+
 
 #endif
