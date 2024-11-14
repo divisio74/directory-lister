@@ -9,22 +9,22 @@ SRC		=		my_ls.c \
 				annexe1.c \
 				annexel.c \
 				flagl.c \
-				struct.c \
 				fonction_tri.c \
 				fonction_tri_t.c \
-				pre_ls.C \
+				pre_ls.c \
+				main.c \
 
 
 
 OBJ 	=		$(SRC:.c=.o)
 
-NAME    = 		libmy.a
+NAME    = 		my_ls
 
 
 all: 	$(NAME)
 
 $(NAME): 		$(OBJ)
-		gcc -c $(SRC)
+		gcc -o $(NAME) $(OBJ)
 		ar rc libmy.a $(OBJ)
 
 clean:
